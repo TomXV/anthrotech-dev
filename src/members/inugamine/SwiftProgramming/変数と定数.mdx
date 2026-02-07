@@ -1,20 +1,6 @@
----
-created: 2025-11-12
-tags:
-  - Programming
-aliases:
-  - Programming
-related: "[[Swift]]"
----
-```dataview
-table dateformat(file.ctime, "yyyy/M/d") as "作成日", tags as "Tags", related as "Related"
-from ""
-where contains(file.name, "Swift")
-sort file.ctime asc
-```
 プログラミングの文脈では、単に「変数」という言葉で定数も含めて指すこともある (主に厳密に言い分ける必要がないとき)。
 
-Swift では下記の[[キーワード]]を使用して定数や変数を作成する:
+Swift では下記のキーワードを使用して定数や変数を作成する:
 - 定数を作成する: `let`
 - 変数を作成する: `var`
 
@@ -42,7 +28,7 @@ let maxLoginAttempts = 10
 maxLoginAttempts = 15  // エラー! 変更できない
 ```
 
-Swift では、定数の値は**必ずしもコンパイル時に設定されている必要はない**が、正確に**一度だけ**値を設定する必要がある。
+Swift では、定数の値は**必ずしもコンパイル時に設定されている必要はない**が、正確に**一度だけ**値を設定する必要がある。  
 値の指定をたった一度だけ行い、他のあらゆる場所からその定数を利用できる。
 ```swift
 // 実行時に値が決まっても OK

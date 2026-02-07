@@ -1,17 +1,3 @@
----
-created: 2026-02-02
-tags:
-  - Programming
-aliases:
-  - Programming
-related: "[[Swift]]"
----
-```dataview
-table dateformat(file.ctime, "yyyy/M/d") as "作成日", tags as "Tags", related as "Related"
-from ""
-where contains(file.name, "Swift")
-sort file.ctime asc
-```
 ## 構造体とクラスの比較
 ##### 共通点 - どちらでもできること
 構造体とクラスは、実はかなり似ている。以下のことは**どちらでもできる**:
@@ -139,7 +125,7 @@ class VideoMode {
 - `frameRate` → `0.0` で初期化 → 型推論により `Double` となる
 - `name` → `String?` (オプショナル) → デフォルトで `nil`
 
-注目する点として、**クラスの中に構造体のインスタンスをプロパティとして持てる**という点。
+注目する点として、**クラスの中に構造体のインスタンスをプロパティとして持てる**という点。  
 型をネストして組み合わせるのは、Swift では普通のことである。
 
 
@@ -151,7 +137,7 @@ class VideoMode {
 let someResolution = Resolution()
 let someVideoMode = VideoMode()
 ```
-インスタンスを作るには、型名の後ろに `()` を付けるだけ。これにより、デフォルト値で初期化された新しいインスタンスが生成される。
+インスタンスを作るには、型名の後ろに `()` を付けるだけ。これにより、デフォルト値で初期化された新しいインスタンスが生成される。  
 この `()` は、実はイニシャライザ (`init`) の呼び出しであるが、詳しくは後の「初期化」の章で説明する。
 
 
@@ -174,8 +160,8 @@ print(someVideoMode.resolution.width) // 0
 someVideoMode.resolution.width = 1280
 print(someVideo.resolution.width) // 1280
 ```
-`someVideoMode` は `let` (定数) で宣言されているのに、中のプロパティを変更できる。
-これは `VideoMode` が**クラス** (参照型) だからである。定数が保持しているのは「インスタンスそのもの」ではなく、あくまでも「インスタンスへの参照」なので、参照先の中身は変更することができる。そのため、別のインスタンスの参照に変更することはできない。
+`someVideoMode` は `let` (定数) で宣言されているのに、中のプロパティを変更できる。これは `VideoMode` が**クラス** (参照型) だからである。  
+定数が保持しているのは「インスタンスそのもの」ではなく、あくまでも「インスタンスへの参照」なので、参照先の中身は変更することができる。そのため、別のインスタンスの参照に変更することはできない。
 
 
 

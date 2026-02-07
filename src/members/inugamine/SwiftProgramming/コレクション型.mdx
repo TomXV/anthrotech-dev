@@ -1,17 +1,3 @@
----
-created: 2025-11-12
-tags:
-  - Programming
-aliases:
-  - Programming
-related: "[[Swift]]"
----
-```dataview
-table dateformat(file.ctime, "yyyy/M/d") as "作成日", tags as "Tags", related as "Related"
-from ""
-where contains(file.name, "Swift")
-sort file.ctime asc
-```
 Swift は 3 つの基本的な**コレクション型**を提供している:
 
 | 型 | 特徴 | 順序 | 重複 |
@@ -20,7 +6,7 @@ Swift は 3 つの基本的な**コレクション型**を提供している:
 | セット (Set) | 一意な値の集合 | なし | 不可 |
 | 辞書 (Dictionary) | キーと値のペア | なし | キーは不可 |
 
-Swift のコレクションは、保持している値の[[型]]が常に明確である。
+Swift のコレクションは、保持している値の[[型]]が常に明確である。  
 間違った型の値を挿入することができず、取得する値の型もはっきり分かる。
 
 

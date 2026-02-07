@@ -1,17 +1,3 @@
----
-created: 2026-02-01
-tags:
-  - Programming
-aliases:
-  - Programing
-related: "[[Swift]]"
----
-```dataview
-table dateformat(file.ctime, "yyyy/M/d") as "作成日", tags as "Tags", related as "Related"
-from ""
-where contains(file.name, "Swift")
-sort file.ctime asc
-```
 ## 列挙型構文 (Enumeration Syntax)
 
 #### 基本の書き方
@@ -221,7 +207,7 @@ if case .qrcode(let code) = productBarcode {
 
 ## Raw Value (生の値)
 ##### 関連値との違い:
-**関連値**は「インスタンス生成時に決まる、ケースごとに違う値」である。
+**関連値**は「インスタンス生成時に決まる、ケースごとに違う値」である。  
 **Raw Value** はそれとは逆で、**定義時に決まる、全ケース共通の型の固定値**のこと。
 
 |            | 関連値            | Raw Value       |

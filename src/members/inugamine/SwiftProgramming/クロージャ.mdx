@@ -1,22 +1,8 @@
----
-created: 2025-12-18
-tags:
-  - Programming
-aliases:
-  - Programming
-related: "[[Swift]]"
----
-```dataview
-table dateformat(file.ctime, "yyyy/M/d") as "作成日", tags as "Tags", related as "Related"
-from ""
-where contains(file.name, "Swift")
-sort file.ctime asc
-```
-クロージャは、コード内で受け渡して使用できる、ある機能の独立したブロックである。Swift のクロージャは、他のプログラミング言語におけるクロージャ、匿名関数、ラムダ、ブロックと似ている。
-クロージャは、[[変数と定数]]への参照を、それらを定義したコンテキストから *キャプチャ* して保持できる。これは、これらの定数と変数をスコープに*閉じ込める*とも呼ばれる。
+クロージャは、コード内で受け渡して使用できる、ある機能の独立したブロックである。Swift のクロージャは、他のプログラミング言語におけるクロージャ、匿名関数、ラムダ、ブロックと似ている。  
+クロージャは、[変数と定数](/@inugamine/SwiftProgramming/変数と定数)への参照を、それらを定義したコンテキストから *キャプチャ* して保持できる。これは、これらの定数と変数をスコープに*閉じ込める*とも呼ばれる。  
 Swift は、キャプチャに関連したすべてのメモリ管理を行う。
 
-[[関数]]で取り扱ったグローバル関数やネスト関数は、実際にはクロージャの特殊なケースである。
+[関数](/@inugamine/SwiftProgramming/関数)で取り扱ったグローバル関数やネスト関数は、実際にはクロージャの特殊なケースである。
 クロージャは、次の 3 つの形式のいずれかを取る:
 
 - グローバル関数: 名前があり、値をキャプチャしないクロージャ
@@ -32,8 +18,8 @@ Swift のクロージャは、一般的に、簡潔で混乱のない構文で�
 
 
 ### クロージャ式 (Closure Expressions)
-**ネスト関数**は便利だが、毎回名前をつけ完全な形で書く必要があるため、たびたび面倒な時がある。そこで、**インラインで短く書くことができ、名前が不要な関数**のようなものを使う。
-それが**クロージャ式**である。
+**ネスト関数**は便利だが、毎回名前をつけ完全な形で書く必要があるため、たびたび面倒な時がある。  
+そこで、**インラインで短く書くことができ、名前が不要な関数**のようなものを使う。それが**クロージャ式**である。
 
 #### クロージャ式の基本構文
 ```swift
@@ -55,8 +41,7 @@ print(multiply(3, 7)) // ← (x: 3, y: 7) にはしない
 
 
 #### クロージャ式の省略構文
-クロージャの省略テクニックをソートメソッド `sorted(by:)` を使って、段階的に示す:
-
+クロージャの省略テクニックをソートメソッド `sorted(by:)` を使って、段階的に示す:  
 まず、並べ替えたい以下の配列があるとする。
 ```swift
 let names = ["Chris", "Alex", "Ewa", "Barry", "Daniella"]
@@ -64,7 +49,7 @@ let names = ["Chris", "Alex", "Ewa", "Barry", "Daniella"]
 
 `sorted(by:)` は「**2つの要素を受け取って、どちらが先か決める関数**」を引数に取る。
 
-普通の関数を渡す場合:
+普通の関数を渡す場合:  
 まずは、普通に関数を定義して渡すやり方を示す。
 ```swift
 func backward(_ s1: String, _ s2: String) -> Bool {
@@ -73,10 +58,8 @@ func backward(_ s1: String, _ s2: String) -> Bool {
 var reversedNames = names.sorted(by: backward)
 // ["Ewa", "Daniella", "Chris", "Barry", "Alex"]
 ```
-`s1 > s2` が `true` なら `s1` が先に来る。文字列の `>` は「アルファベット順で後」という意味なので、逆順ソートとなる。
-
-しかし、`s1 > s2` というたった1行の処理のために `backward()` という名前をつけ、完全な形の関数を定義するのは**冗長**である。
-
+`s1 > s2` が `true` なら `s1` が先に来る。文字列の `>` は「アルファベット順で後」という意味なので、逆順ソートとなる。  
+しかし、`s1 > s2` というたった1行の処理のために `backward()` という名前をつけ、完全な形の関数を定義するのは**冗長**である。  
 そこで**クロージャ式**を使って、インラインで書くわけである。
 上記の `backward` 関数をクロージャ式にすると以下のようになる:
 ```swift
@@ -87,8 +70,8 @@ reversedNames = names.sorted(by: { (s1: String, s2: String) -> Bool in
 ```
 
 
-省略1: クロージャはコンテキストから型の推論を行うことができる (Inferring Type From Context)
-`sorted(by:)` は String の配列から呼び出されているので、Swift は**引数の型を推論できる**。
+省略1: クロージャはコンテキストから型の推論を行うことができる (Inferring Type From Context)  
+`sorted(by:)` は String の配列から呼び出されているので、Swift は**引数の型を推論できる**。  
 つまり、`(String, String) -> Bool` という型は、わざわざ書かなくてもよい。
 ```swift
 reversedName = names.sort(by: { s1, s2 in return s1 > s2 })
@@ -99,7 +82,7 @@ reversedName = names.sort(by: { s1, s2 in return s1 > s2 })
 - パラメータを囲む `()`
 
 
-省略2: 単一式のクロージャの暗黙的リターン (Implicit Return)
+省略2: 単一式のクロージャの暗黙的リターン (Implicit Return)  
 クロージャの本文が**1つの式だけ**なら、`return` も省略できる。
 ```swift
 reversedName = names.sorted(by: { s1, s2 in s1 > s2 })
@@ -107,7 +90,7 @@ reversedName = names.sorted(by: { s1, s2 in s1 > s2 })
 `s1 > s2` は `Bool` を返す式なので、Swift が「これは Bool を返すのだな」と推論できる。
 
 
-省略3: 省略引数名 (Shorthand Argument Names)
+省略3: 省略引数名 (Shorthand Argument Names)  
 Swift はインラインクロージャに**自動で引数名を割り当てる**。
 - 1番目の引数 → `$0`
 - 2番目の引数 → `$1`
@@ -119,8 +102,8 @@ reversedName = names.sorted(by: { $0 > $1 })
 ```
 
 
-省略4: 演算子メソッド (Operator Methods)
-Swift の `String` 型は `>` 演算子を持っており、その型は `(String, String) -> Bool` である。
+省略4: 演算子メソッド (Operator Methods)  
+Swift の `String` 型は `>` 演算子を持っており、その型は `(String, String) -> Bool` である。  
 これは `sorted(by:)` が求めている型と**完全に一致する**。
 ```swift
 reversedNames = names.sorted(by: >)
@@ -137,11 +120,12 @@ reversedNames = names.sorted(by: >)
 | 3    | return 省略   | `{ s1, s2 in s1 > s2}`                                  |
 | 4    | 省略引数名       | `{ $0 > $1 }`                                           |
 | 5    | 演算子のみ       | `>`                                                     |
+
 この例はあくまでも「一行の場合にはここまで省略できる」というものであるため、省略するとかえって読みづらくなる場合は無理に省略する必要はない。
 
 
 #### 末尾クロージャ (Trailing Closures):
-関数の**最後の引数**がクロージャの場合、括弧の**外側**に書けるというルール。
+関数の**最後の引数**がクロージャの場合、括弧の**外側**に書けるというルール。  
 特にクロージャが長くなるときに読みやすくなる。
 
 基本の型:
@@ -190,7 +174,7 @@ names.sorted { $0 > $1 }
 
 
 #### 値のキャプチャ (Capturing Values)
-クロージャは、定義された **周辺のコンテキストから変数や定数を「キャプチャ」** できる。
+クロージャは、定義された **周辺のコンテキストから変数や定数を「キャプチャ」** できる。  
 キャプチャした値は、元のスコープがなくなっても**クロージャの中で使い続けられる**。
 ```swift
 func makeIncrementer(forIncrement amount: Int) -> () -> Int {
@@ -210,7 +194,7 @@ func makeIncrementer(forIncrement amount: Int) -> () -> Int {
 ```swift
 func makeIncrementer(forIncrement amount: Int) -> () -> Int
 ```
-戻り値が `() -> Int` である。これは「**引数なしで Int を返す関数**」という意味。
+戻り値が `() -> Int` である。これは「**引数なしで Int を返す関数**」という意味。  
 つまり `makeIncrementer` は**関数を返す関数**である。
 
 ##### 中身を見る
@@ -230,7 +214,7 @@ func makeIncrementer(amount: Int) -> () -> Int {
     return incrementer            // ← 関数を返す
 }
 ```
-ネスト関数 `incrementer` の中で、**外側の変数** `runningTotal` と `amount` を使っている。
+ネスト関数 `incrementer` の中で、**外側の変数** `runningTotal` と `amount` を使っている。  
 これが**キャプチャ**である。
 
 普通、関数が終わったらローカル変数は消えるが、キャプチャされた変数は解放されず、クロージャと共に継続的に使用可能な状態となる。
@@ -304,10 +288,9 @@ counterB ──┘
 ```
 2 つの変数が、1 つのクロージャを指している状態。
 
-また、今回 `let counterA = makeCounter()` というふうに `let` (定数)で定義している。
-なぜ定数なのに呼ぶ度に結果が変わるのか？
-これは「`counterA` が**どのクロージャを指す**かは変わらない」という意味である。
-クロージャの**中身** (キャプチャした `count`) が変わるのは問題ない。
+また、今回 `let counterA = makeCounter()` というふうに `let` (定数)で定義している。  
+なぜ定数なのに呼ぶ度に結果が変わるのか？  
+これは「`counterA` が**どのクロージャを指す**かは変わらない」という意味である。クロージャの**中身** (キャプチャした `count`) が変わるのは問題ない。
 
 ### 参照型のポイント:
 - クロージャを代入すると、**コピーではなくて参照が共有**される
@@ -390,8 +373,8 @@ func someFunctionWithEscapingClosure(completionHandler: @escaping () -> Void) {
 1. クロージャを受け取る
 2. 配列に保存する
 3. 関数が終了する
-4. **後で**配列からクロージャを取り出して実行する
-クロージャが関数の外で生き残るので、`@escaping` が必要となる。
+4. **後で**配列からクロージャを取り出して実行する  
+クロージャが関数の外で生き残るので、`@escaping` が必要となる。  
 もし `@escaping` を付けないとコンパイルエラーとなる。
 
 
@@ -437,7 +420,7 @@ struct SomeStruct {
     }
 }
 ```
-構造体は**値型**なので、エスケープクロージャが `self` をキャプチャすると問題が起きる。
+構造体は**値型**なので、エスケープクロージャが `self` をキャプチャすると問題が起きる。  
 変更可能な値のコピーをどう扱うか、ややこしくなってしまう。
 ##### まとめ:
 | ポイント        | 内容                       |
@@ -450,7 +433,7 @@ struct SomeStruct {
 
 
 #### 自動クロージャ (Autoclosures)
-`@autoclosure` を使うと、**普通の式を自動的にクロージャに変換**する。
+`@autoclosure` を使うと、**普通の式を自動的にクロージャに変換**する。  
 つまり、中括弧`{}`を書かなくてもクロージャになる。
 
 ---
@@ -497,6 +480,6 @@ print(numbers)
 
 ---
 ⚠️注意点:
-`@autoclosure` を使いすぎると、コードが分かりにくくなる。
+`@autoclosure` を使いすぎると、コードが分かりにくくなる。  
 (呼び出し側から見ると、普通の値を渡しているように見えて実は遅延評価されているため)
 

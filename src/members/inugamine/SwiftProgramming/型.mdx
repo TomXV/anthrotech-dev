@@ -1,22 +1,8 @@
----
-created: 2025-11-12
-tags:
-  - Programming
-aliases:
-  - Programming
-related: "[[Swift]]"
----
-```dataview
-table dateformat(file.ctime, "yyyy/M/d") as "作成日", tags as "Tags", related as "Related"
-from ""
-where contains(file.name, "Swift")
-sort file.ctime asc
-```
 ## 型 (Type) とは
 
 **型 = データの種類**
 
-[[変数と定数|変数・定数]]に**何を入れられるか**を決めるルールのこと。
+[変数と定数](/@inugamine/SwiftProgramming/変数と定数)に**何を入れられるか**を決めるルールのこと。
 
 
 ## 主な型
@@ -90,7 +76,7 @@ let name = "Ken"      // Swift が「これは String だな」と推論
 
 コンパイラがコンパイル時に与えられた値を調べることで、式の型を自動で推論してくれる。
 
-型推論は、特に初期値を伴って[[変数と定数|変数や定数]]を宣言するときに役立つ。
+型推論は、特に初期値を伴って[[変数と定数|変数や定数]]を宣言するときに役立つ。  
 コードに直接出てくる `42` や `3.14` のようなリテラル値を代入する際によく機能する。
 
 
@@ -129,7 +115,7 @@ let userID: String = "12345"  // 数字だけど文字列として扱う
 - **型安全**: 全ての値と場所に型があり、不一致はエラーになる
 - **型推論**: 型を明示しなくても Swift が自動で判断する
 
-Swift は型推論のおかげで、C 言語や Objective-C のような言語と比べて型を宣言する必要が少ない。
+Swift は型推論のおかげで、C 言語や Objective-C のような言語と比べて型を宣言する必要が少ない。  
 しかし全ての定数と変数には型があり、型チェックは常に行われる。
 
 
