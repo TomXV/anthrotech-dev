@@ -1,0 +1,729 @@
+Swift は様々な制御フロー文を提供している。ループ、条件分岐、制御転送文を使ってコードを構造化する。
+
+## For-In ループ
+
+配列のアイテムや数値の範囲、文字列の文字などのシーケンスに対してループ処理を行う。
+
+```swift
+let names = ["Anna", "Alex", "Brian"]
+for name in names {
+    print("こんにちは、\(name)!")
+}
+```
+
+### 範囲演算子
+
+| 演算子            | 例                      | 意味                   |
+| -------------- | ---------------------- | -------------------- |
+| `...`          | `1...5`                | 1, 2, 3, 4, 5（両端を含む） |
+| `..<`(半開範囲演算子) | `1..<5`                | 1, 2, 3, 4（末尾を含まない）  |
+| 片側             | `2...`, `...2`, `..<2` | 片方だけ指定               |
+
+```swift
+for i in 1...5 {
+    print("\(i) × 5 は \(i * 5)")
+}
+
+// 配列のインデックスには半開範囲が便利
+for i in 0..<names.count {
+    print("\(i): \(names[i])")
+}
+```
+
+### 辞書のループ
+
+```swift
+let numberOfLegs = ["spider": 8, "ant": 6, "cat": 4]
+for (animalName, legCount) in numberOfLegs {
+    print("\(animalName) には \(legCount) 本の足があります")
+}
+```
+
+### 値を使わない場合
+
+```swift
+let base = 3
+let power = 10
+var answer = 1
+for _ in 1...power {
+    answer *= base
+}
+// 3^10 = 59049
+```
+for 文のループ変数にワイルドカードと呼ばれる `_` を渡している。
+
+### stride で間隔を指定
+
+```swift
+// 0, 5, 10, 15 ... 55 (60 は含まない)
+for tickMark in stride(from: 0, to: 60, by: 5) {
+    print(tickMark)
+}
+
+//  0, 5, 10, 15 ... 60 (throug なので 60 を含む)
+for tickMark in stride(from: 0, throug: 60, by: 5) {
+    print(tickMark)
+}
+
+// 3, 6, 9, 12（12 を含む）
+for tickMark in stride(from: 3, through: 12, by: 3) {
+    print(tickMark)
+}
+```
+
+
+## While ループ
+
+条件を評価してからループを実行する。評価した結果が `true` なら、条件が `false` になるまでループ内の処理を繰り返す。
+
+```swift
+var count = 0
+while count < 5 {
+    print(count)
+    count += 1
+}
+// 0, 1, 2, 3, 4
+```
+
+
+## Repeat-While ループ
+
+**ループ条件を検証する前に、一度ループ内の処理を実行する。** その後、条件が `false` になるまで繰り返す。  
+Swift の `repeat-while` は、他の言語でいうところの `do-while` に当たる。
+
+```swift
+var count = 0
+repeat {
+    print(count)
+    count += 1
+} while count < 5
+// 0, 1, 2, 3, 4
+```
+
+### while vs repeat-while
+
+| 種類           | 条件チェック | 最低実行回数 | 使いどころ               |
+| ------------ | ------ | ------ | ------------------- |
+| while        | ループの前  | 0回     | 条件次第では実行しない可能性がある場合 |
+| repeat-while | ループの後  | 1回     | 最低1回は処理したい場合        |
+
+## If 文
+
+条件が `true` の場合にのみ、内部の文が実行される。
+
+```swift
+let temperature = 30
+if temperature <= 32 {
+    print("とても寒いですね。")
+}
+```
+
+### else と else if
+
+```swift
+if temperature <= 32 {
+    print("とても寒いですね。")
+} else if temperature >= 86 {
+    print("とても暑いですね。")
+} else {
+    print("過ごしやすいですね。")
+}
+```
+
+### if 式（Swift 5.9+）
+
+値を設定するときに `if` を式として使える。三項演算子の拡張版のようなもの。
+
+```swift
+var temperature = 24
+
+let weatherAdvice = if temperature <= 0 {
+    "氷点下です。"
+} else if temperature >= 30 {
+    "暑いです。"
+} else {
+    "快適です。"
+}
+
+print(weatherAdvice)
+// 快適です。
+```
+
+
+## Switch 文
+
+複数の可能性に対してパターンマッチを使用して比較を行い、一致した最初のパターンのコードブロックを実行する。
+
+```swift
+switch 調べたい値 {
+case 値1:
+    値1だった時の処理
+case 値2, 値3:
+    値2か値3だった時の処理
+default:
+    どれにも当てはまらなかった時の処理
+}
+
+let char: Character = "a"
+
+switch char {
+case "a", "e", "i", "o", "u":
+    print("母音")
+default:
+    print("子音か他の文字")
+}
+// 母音
+```
+
+- 空の本文は不正とみなされるため、必ず何かしらの処理が必要である。
+- **網羅的**でなければいけない。(すべてのケースをカバーしていること)
+- カバーしきれない場合は `default` が必要。
+- C 言語と違い、**自動で(暗黙的に) fallthrough しない***(`break`不要)
+### →「暗黙的に fallthrough しない」とは？
+
+Swift の `switch` は、最初に合致したケースが完了したらすぐに `switch` 文全体の実行が終了する。C 言語と異なり `break` は不要。
+
+### 範囲マッチング
+
+```swift
+let count = 62
+switch count {
+case 0:
+    print("なし")
+case 1..<5:
+    print("少し")
+case 5..<100:
+    print("たくさん")
+default:
+    print("大量")
+}
+// たくさん
+```
+
+### タプル
+
+```swift
+let point3D = (1, 2, 3)
+switch point3D {
+    case (0, 0, 0):
+        print("原点")
+    case (_, 0, 0):
+        print("x軸上")
+    case (0, _, 0):
+        print("y軸上")
+    case (0, 0, _):
+        print("z軸上")
+    case (-99...99, -99...99, -99...99):
+        print("座標平面上")
+    default:
+        print("それ以外")
+}
+```
+
+### 値バインディング
+
+```swift
+let point = (2, 0)
+switch point {
+case (let x, 0):
+    print("x軸上、x = \(x)")
+case (0, let y):
+    print("y軸上、y = \(y)")
+case let (x, y):
+    print("その他: (\(x), \(y))")
+}
+```
+
+### where
+Swift の `switch` 文における `where` 句は、
+**ケースのパターンマッチングにさらに追加の条件(フィルター)を指定する**ために使用される。
+
+単なる値の一致だけでなく、その値が特定の条件を満たすかどうかを動的にチェックしたい場合に便利である。
+#### 基本的な仕組み
+`case` パターンで値を抽出し(値バインディング) 、その抽出した値に対して `where` 以降に記述した論理式が `true` になる場合のみ、そのケースが実行される。
+
+例1) 「年齢」と「学生かどうか」で割引を判定する:
+```swift
+let age = 20
+let isStudent = true
+
+switch age {
+    case 0...12:
+        print("子供料金です")
+    case 13...22 where isStudent: // 13歳から22歳で、かつ学生証を提示した場合
+        print("学割適用です")
+    case 13...22: // 13歳から22歳であるが、学生証を提示しなかった場合
+        print("学割適用外による一般料金です")
+    case 65...: // 65歳以上
+        print("シニア料金です")
+    default:
+        print("一般料金です")
+}
+// 学割適用です
+```
+
+例2) 「気温」と「湿度」で熱中症警戒を判定する例:
+```swift
+let weather = (temperature: 32, humidity: 80) // 気温32度、湿度80%
+
+switch weather {
+case (let t, _) where t >= 35:
+    print("猛暑日です。外出を控えましょう。")
+case (let t, let h) where t >= 30 && h >= 70:
+    print("気温が30度を超え、湿度も高い（\(h)%）ので、熱中症に厳重警戒です。")
+case (30..., _):
+    print("真夏日です。水分補給を忘れずに。")
+default:
+    print("過ごしやすい天気です。")
+}
+// 結果: 気温が30度を超え、湿度も高い（80%）ので、熱中症に厳重警戒です。
+```
+
+`where` 句を使うタイミングは、
+**「パターン (範囲や型) としては一致しているけれど、さらに細かい条件 (〜の場合だけ) を付け加えたいとき」**
+- `case 13...22`: 13歳から22歳なら誰でも。
+- `case 13...22 where isStudent`: 13歳から22歳で、**なおかつ学生証提示の場合のみ**。
+
+※「大まかなグループ」の中から「特定の条件を満たす人 (物)」だけを絞り込むイメージ
+
+
+### 複合ケース
+
+```swift
+let char: Character = "e"
+switch char {
+case "a", "e", "i", "o", "u":
+    print("英語におけるアルファベットの母音")
+case "b", "c", "d", "f", "g", "h", "j", "k", "l", "m",
+     "n", "p", "q", "r", "s", "t", "v", "w", "x", "y", "z":
+    print("英語におけるアルファベットの子音")
+default:
+    print("その他の文字")
+}
+```
+
+
+## パターン
+
+### if case
+
+`switch` の 1 ケースだけを検証したいときに使う。
+
+```swift
+enum Status {
+    case loading
+    case success(data: String)
+    case error(message: String)
+}
+
+let result = Status.success(data: "ユーザー情報")
+
+if case .success(let data) = result {
+    print("成功: \(data)")
+}
+// 出力: 成功: ユーザー情報
+```
+
+カンマで条件を追加できる：
+
+```swift
+enum NetworkStatus {
+    case success(code: Int)
+    case failure(code: Int)
+}
+
+let response = NetworkStatus.failure(code: 404)
+if case .failure(let code) = response, code == 404 {
+    print("ページが見つかりません")
+}
+```
+
+この文には 2 つの条件がある：
+```swift
+// 条件1: パターンマッチ
+.failure(let code) = response
+
+// 条件2: 普通の比較
+code == 404
+```
+
+カンマ `,` は **「かつ（AND）」** という意味になる。
+
+#### 読み方のコツ
+
+```swift
+if case パターン = 調べたい値 {
+// 調べたい値が、このパターンにハマるなら
+```
+
+| 記号  | 使う場面    | 意味             |
+| --- | ------- | -------------- |
+| ==  | 値の比較    | 「等しいか？」        |
+| =   | パターンマッチ | 「このパターンにハマるか？」 |
+
+### for-case-in
+
+ループ内でパターンマッチを行う。
+
+```swift
+let points = [(10, 0), (30, -30), (-20, 0)]
+
+// 通常の for-in + if
+for (x, y) in points {
+    if y == 0 {
+        print("x軸上に点\(x)を発見")
+    }
+}
+
+// for-case-in（より簡潔）
+for case (let x, 0) in points {
+    print("x軸上に点\(x)を発見")
+}
+```
+
+### where と組み合わせ
+
+```swift
+for case let (x, y) in points where x == y || x == -y {
+    print("原点を通る直線上に (\(x), \(y)) を発見")
+}
+```
+
+
+## 制御転送文
+
+Swift には 5 つの制御転送文がある：
+- `continue` - 次のループへ
+- `break` - ループや switch を終了
+- `fallthrough` - 次の case へ通り抜け
+- `return` - [[関数]]を終了
+- `throw` - エラーを投げる
+
+### Continue
+
+各ループ内の実行を止めて、次のループの最初から処理を開始する。
+
+```swift
+let stringInput = "たべられない"
+var stringOutput = ""
+let charactersToRemove: [Character] = ["ら"]
+
+for character in stringInput {
+    if charactersToRemove.contains(character) {
+        continue  // このループをスキップ
+    }
+    stringOutput.append(character)
+}
+print(stringOutput)  // たべれない
+```
+
+| 周回 | character | 「ら」か？ | 何が起きる | stringOutput |
+|-----|-----------|---------|----------|--------------|
+| 1周目 | た | NO | append | `た` |
+| 2周目 | べ | NO | append | `たべ` |
+| 3周目 | ら | **YES** | **continue** | `たべ` |
+| 4周目 | れ | NO | append | `たべれ` |
+| 5周目 | な | NO | append | `たべれな` |
+| 6周目 | い | NO | append | `たべれない` |
+
+
+### Break
+
+即座に全体の制御フローの実行を終了させる。
+
+**ループ内で Break:**
+ループの実行を即座に終了し、ループの閉じ括弧 `}` の後に制御フローを移す。
+
+**Switch 内で Break:**
+`switch` の実行を即座に終了。何もしないケースを明示するために使う。
+
+```swift
+let numberSymbol: Character = "三"
+var possibleIntegerValue: Int?
+
+switch numberSymbol {
+case "1", "١", "一", "๑":
+    possibleIntegerValue = 1
+case "2", "٢", "二", "๒":
+    possibleIntegerValue = 2
+case "3", "٣", "三", "๓":
+    possibleIntegerValue = 3
+case "4", "٤", "四", "๔":
+    possibleIntegerValue = 4
+default:
+    break  // 何もしない
+}
+
+if let integerValue = possibleIntegerValue {
+    print("\(numberSymbol) の整数値は \(integerValue) です。")
+} else {
+    print("\(numberSymbol) の整数値は見つかりませんでした。")
+}
+// 三 の整数値は 3 です。
+```
+
+
+### Fallthrough
+
+次の case の本文を実行したい場合に使う。
+
+```swift
+let integerToDescribe = 5
+var description = "数字 \(integerToDescribe) は"
+
+switch integerToDescribe {
+case 2, 3, 5, 7, 11, 13, 17, 19:
+    description += " 素数です。そして、"
+    fallthrough
+default:
+    description += "整数です。"
+}
+print(description)
+// 数字 5 は 素数です。そして、整数です。
+```
+
+`fallthrough` は次のケースの条件をチェックせず、直接本文を実行する。
+
+
+### ラベル付き文
+
+ネストが深いループで、どのループを `break` や `continue` するかを明示する。
+
+```swift
+outerLoop: for i in 1...9 {
+    for j in 1...9 {
+        let result = i * j
+        if result > 30 {
+            break outerLoop  // 外側のループを抜ける
+        }
+        print("\(i) × \(j) = \(result)")
+    }
+}
+print("終了！")
+```
+
+```swift
+outerLoop: for i in 1...3 {
+    for j in 1...3 {
+        if j == 2 {
+            continue outerLoop  // 外側のループの次の周回へ
+        }
+        print("\(i) - \(j)")
+    }
+}
+// 1 - 1
+// 2 - 1
+// 3 - 1
+```
+
+| 書き方 | 何が起きる |
+|--------|----------|
+| `break` | 一番内側のループだけ抜ける |
+| `break ラベル名` | そのラベルのループを抜ける |
+| `continue` | 一番内側のループの、次の周回へ |
+| `continue ラベル名` | そのラベルのループの、次の周回へ |
+
+
+## 早期リターン（guard）
+
+`if` とは逆で、**条件を満たさない場合に早期に抜ける**ための構文。
+
+基本形:
+```swift
+func greet(name: String?) {
+    guard let name = name else {
+        print("名前がない")
+        return // 必ず抜ける処理が必要
+    }
+    print("こんにちは、\(name)さん。")
+}
+```
+
+if との違い:
+```swift
+// if を使った場合 (ネストが深くなる)
+func processA(value: Int?) {
+    if let value = value {
+        if value > 0 {
+            if value < 100 {
+                print("有効な値: \(value)")
+            }
+        }
+    }
+}
+
+// guard を使った場合 (フラットに書ける)
+func processB(value: Int?) {
+    guard let value = value else { return }
+    guard value > 0 else { return }
+    guard value < 100 else { return }
+    
+    print("有効な値: \(value)")
+}
+
+```
+
+guard のポイント:
+- `else` ブロックは**必須**
+- `else` の中では必ず**scopeを抜ける処理** (`return`,`break`,`continue`,`throw`など) が必要
+- `guard` でバインドした変数は、**その後のスコープでも使える** (`if let` と違う)
+
+
+### if let vs guard let vs if case let
+
+```swift
+// if let - ブロック内だけで使える
+if let name = person["name"] {
+    print(name)
+}
+
+// guard let - その先ずっと使える
+guard let name = person["name"] else { return }
+print(name)
+
+// if case let - パターンマッチ、ブロック内だけ
+if case .success(let data) = result {
+    print(data)
+}
+```
+
+| 構文 | スコープ | 失敗したとき |
+|------|---------|------------|
+| `if let` | ブロック内だけ | else に行くか、何もしない |
+| `guard let` | **その先ずっと** | 必ず脱出（return など）が必要 |
+| `if case let` | ブロック内だけ | else に行くか、何もしない |
+
+
+## 遅延アクション（defer）
+
+`defer` はプログラムが**現在のスコープの最後に到達したとき**に実行される。
+
+```swift
+func doSomething() {
+    print("関数に入りました")
+    defer {
+        print("関数を抜けました")
+    }
+    print("処理中です...")
+}
+
+doSomething()
+// 関数に入りました
+// 処理中です...
+// 関数を抜けました  ← 最後に実行
+```
+
+### 早期リターンしても実行される
+
+```swift
+func checkAge(age: Int) {
+    defer {
+        print("チェック完了")
+    }
+    
+    if age < 0 {
+        print("不正な年齢です")
+        return  // ここで抜けても defer は実行される
+    }
+    print("年齢: \(age)")
+}
+
+checkAge(age: -5)
+// 不正な年齢です
+// チェック完了  ← ちゃんと実行される
+
+checkAge(age: 32)
+// 年齢: 32
+// チェック完了
+```
+
+### 複数の defer は逆順で実行
+
+```swift
+func stackExample() {
+    defer { print("1番目のdefer") }
+    defer { print("2番目のdefer") }
+    defer { print("3番目のdefer") }
+    print("本体の処理")
+}
+
+stackExample()
+// 本体の処理
+// 3番目のdefer  ← 最後に書いたものが最初
+// 2番目のdefer
+// 1番目のdefer  ← 最初に書いたものが最後
+```
+
+### defer が便利な場面
+
+| 場面 | 使い方 |
+|------|--------|
+| ログ | 「処理開始」の後に「処理終了」の defer を書く |
+| リソース管理 | 「ファイルを開く」の後に「ファイルを閉じる」の defer を書く |
+| 状態変更 | 「変える」の後に「戻す」の defer を書く |
+
+**「何かを始めたら、必ず終わりの処理をしたい」** ときに使う。
+途中で `return` が実行されたり、エラーが起きても **`defer` は必ず実行される**。
+
+
+## API アベイラビリティチェック
+
+使用する API が実行時に使用可能かどうかをチェックする。
+
+```swift
+if #available(iOS 10, macOS 10.12, *) {
+    // iOS 10以上 または macOS 10.12以上 で実行
+} else {
+    // それ以前のバージョンで実行
+}
+```
+
+`*` は必須で、他のプラットフォームでは最小のデプロイメントターゲットで実行されることを示す。
+
+### guard と組み合わせ
+
+```swift
+func useNewFeature() {
+    guard #available(iOS 15, *) else {
+        print("iOS 15以上が必要です")
+        return
+    }
+    // iOS 15以上の機能を使用
+}
+```
+
+### #unavailable
+
+使用不可の場合をチェック。
+
+```swift
+if #unavailable(iOS 10) {
+    // iOS 10より前のフォールバックコード
+}
+
+// これは以下と同じ意味:
+if #available(iOS 10, *) {
+    // 処理を書かない
+} else {
+    print("古い方法で処理")
+}
+```
+
+
+## まとめ
+
+| カテゴリ | 文            | 用途              |
+| ---- | ------------ | --------------- |
+| ループ  | for-in       | 配列、範囲、辞書のループ    |
+|      | while        | 条件が true の間ループ  |
+|      | repeat-while | 最低1回実行してからループ   |
+| 条件分岐 | if           | 条件による分岐         |
+|      | switch       | パターンマッチによる分岐    |
+|      | guard        | 早期リターン          |
+| 制御転送 | continue     | 次のループへ          |
+|      | break        | ループや switch を終了 |
+|      | fallthrough  | 次の case へ通り抜け   |
+|      | return       | 関数を終了           |
+|      | throw        | エラーを投げる         |
+| その他  | defer        | スコープ終了時に実行      |
+|      | #available   | API の利用可能性チェック  |

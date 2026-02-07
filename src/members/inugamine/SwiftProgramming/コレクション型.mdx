@@ -1,0 +1,308 @@
+Swift は 3 つの基本的な**コレクション型**を提供している:
+
+| 型 | 特徴 | 順序 | 重複 |
+|----|------|------|------|
+| 配列 (Array) | 順序付きリスト | あり | 許可 |
+| セット (Set) | 一意な値の集合 | なし | 不可 |
+| 辞書 (Dictionary) | キーと値のペア | なし | キーは不可 |
+
+Swift のコレクションは、保持している値の[[型]]が常に明確である。  
+間違った型の値を挿入することができず、取得する値の型もはっきり分かる。
+
+
+## 配列 (Array)
+
+同じ[[型]]の値を**順序付きリスト**で保持する。同じ値を複数回入れることもできる。
+
+### 配列の作成
+
+```swift
+// 型注釈で作成
+var numbers: [Int] = []
+
+// イニシャライザで作成
+var numbers = [Int]()
+
+// リテラルで作成 (型推論)
+var numbers = [1, 2, 3]
+
+// デフォルト値で作成
+var threeDoubles = Array(repeating: 0.0, count: 3)
+// [0.0, 0.0, 0.0]
+```
+
+### 要素へのアクセス (サブスクリプト)
+
+`[]` を使って**インデックス番号**で要素にアクセスする。インデックスは **0 から始まる**。
+
+```swift
+var fruits = ["りんご", "バナナ", "オレンジ"]
+
+let first = fruits[0]   // "りんご"
+let second = fruits[1]  // "バナナ"
+
+fruits[0] = "いちご"     // 要素を変更
+// ["いちご", "バナナ", "オレンジ"]
+```
+
+### 要素の追加
+
+```swift
+var fruits = ["りんご", "バナナ"]
+
+// 末尾に追加
+fruits.append("オレンジ")
+// ["りんご", "バナナ", "オレンジ"]
+
+// += で追加
+fruits += ["ぶどう", "メロン"]
+// ["りんご", "バナナ", "オレンジ", "ぶどう", "メロン"]
+
+// 特定の位置に挿入
+fruits.insert("いちご", at: 0)
+// ["いちご", "りんご", "バナナ", "オレンジ", "ぶどう", "メロン"]
+```
+
+### 要素の削除
+
+```swift
+var fruits = ["りんご", "バナナ", "オレンジ"]
+
+// 特定の位置を削除 (削除した要素が返る)
+let removed = fruits.remove(at: 1)
+// removed = "バナナ", fruits = ["りんご", "オレンジ"]
+
+// 最後の要素を削除
+fruits.removeLast()
+// ["りんご"]
+
+// 最初の要素を削除
+fruits.removeFirst()
+// []
+
+// 全て削除
+fruits.removeAll()
+```
+
+### 便利なプロパティ
+
+```swift
+let fruits = ["りんご", "バナナ", "オレンジ"]
+
+fruits.count      // 3 (要素数)
+fruits.isEmpty    // false (空かどうか)
+fruits.first      // Optional("りんご") (最初の要素)
+fruits.last       // Optional("オレンジ") (最後の要素)
+```
+
+### 配列のループ
+
+```swift
+let fruits = ["りんご", "バナナ", "オレンジ"]
+
+// 値だけ
+for fruit in fruits {
+    print(fruit)
+}
+
+// インデックスと値の両方
+for (index, fruit) in fruits.enumerated() {
+    print("\(index): \(fruit)")
+}
+// 0: りんご
+// 1: バナナ
+// 2: オレンジ
+```
+
+
+## セット (Set)
+
+同じ[[型]]の値を**順序なし**で保持する。**重複した値は持てない**。
+
+### セットの作成
+
+```swift
+// 型注釈で作成 (配列リテラルから)
+var colors: Set<String> = ["赤", "緑", "青"]
+
+// 型推論 (Set は明示が必要)
+var colors: Set = ["赤", "緑", "青"]
+
+// 空のセット
+var colors = Set<String>()
+```
+
+### 要素の追加・削除
+
+```swift
+var colors: Set = ["赤", "緑", "青"]
+
+// 追加
+colors.insert("黄")
+// {"赤", "緑", "青", "黄"} (順序は不定)
+
+// 削除
+colors.remove("緑")
+// {"赤", "青", "黄"}
+
+// 含まれているか確認
+colors.contains("赤")  // true
+```
+
+### 集合演算
+
+```swift
+let a: Set = [1, 2, 3, 4]
+let b: Set = [3, 4, 5, 6]
+
+a.intersection(b)  // {3, 4} (積集合: 両方にある)
+a.union(b)         // {1, 2, 3, 4, 5, 6} (和集合: どちらかにある)
+a.subtracting(b)   // {1, 2} (差集合: a にだけある)
+a.symmetricDifference(b)  // {1, 2, 5, 6} (対称差: 片方だけにある)
+```
+
+### セットのループ
+
+```swift
+let colors: Set = ["赤", "緑", "青"]
+
+for color in colors {
+    print(color)  // 順序は不定
+}
+
+// ソートしてループ
+for color in colors.sorted() {
+    print(color)  // 青, 緑, 赤 (ソート順)
+}
+```
+
+
+## 辞書 (Dictionary)
+
+**キー**と**値**のペアを**順序なし**で保持する。キーは一意でなければならない。
+
+### 辞書の作成
+
+```swift
+// 型注釈で作成
+var airports: [String: String] = [:]
+
+// リテラルで作成
+var airports = ["HND": "羽田", "NRT": "成田", "KIX": "関西"]
+
+// イニシャライザで作成
+var airports = Dictionary<String, String>()
+```
+
+### 要素へのアクセス (サブスクリプト)
+
+`[]` を使って**キー**で値にアクセスする。戻り値は**常にオプショナル**。
+
+```swift
+var airports = ["HND": "羽田", "NRT": "成田"]
+
+let haneda = airports["HND"]  // Optional("羽田")
+let unknown = airports["XXX"] // nil (存在しない)
+
+// オプショナルバインディングで安全にアクセス
+if let name = airports["HND"] {
+    print("空港名: \(name)")
+}
+```
+
+### 要素の追加・更新
+
+```swift
+var airports = ["HND": "羽田", "NRT": "成田"]
+
+// 新しいキーで追加
+airports["KIX"] = "関西"
+// ["HND": "羽田", "NRT": "成田", "KIX": "関西"]
+
+// 既存のキーで更新
+airports["HND"] = "羽田空港"
+// ["HND": "羽田空港", "NRT": "成田", "KIX": "関西"]
+
+// updateValue で更新 (古い値が返る)
+let oldValue = airports.updateValue("成田空港", forKey: "NRT")
+// oldValue = Optional("成田")
+```
+
+### 要素の削除
+
+```swift
+var airports = ["HND": "羽田", "NRT": "成田", "KIX": "関西"]
+
+// nil を代入して削除
+airports["KIX"] = nil
+// ["HND": "羽田", "NRT": "成田"]
+
+// removeValue で削除 (削除した値が返る)
+let removed = airports.removeValue(forKey: "NRT")
+// removed = Optional("成田"), airports = ["HND": "羽田"]
+```
+
+### 便利なプロパティ
+
+```swift
+let airports = ["HND": "羽田", "NRT": "成田"]
+
+airports.count     // 2 (要素数)
+airports.isEmpty   // false (空かどうか)
+airports.keys      // ["HND", "NRT"] (全てのキー)
+airports.values    // ["羽田", "成田"] (全ての値)
+```
+
+### 辞書のループ
+
+```swift
+let airports = ["HND": "羽田", "NRT": "成田"]
+
+// キーと値の両方
+for (code, name) in airports {
+    print("\(code): \(name)")
+}
+
+// キーだけ
+for code in airports.keys {
+    print(code)
+}
+
+// 値だけ
+for name in airports.values {
+    print(name)
+}
+```
+
+
+## サブスクリプト構文まとめ
+
+`[]` を使って要素にアクセスする書き方を**サブスクリプト構文**と呼ぶ。
+
+| コレクション | アクセス方法 | 戻り値 |
+|-------------|------------|--------|
+| 配列 | `array[インデックス]` | 値そのもの |
+| 辞書 | `dict[キー]` | Optional (nil の可能性) |
+
+```swift
+let animals = ["犬", "猫", "鳥"]
+let first = animals[0]  // "犬"
+
+let airports = ["HND": "羽田"]
+let name = airports["HND"]  // Optional("羽田")
+```
+
+辞書がオプショナルを返すのは、**キーが存在しないかもしれない**から。
+
+
+## コレクションの可変性
+
+`let` で宣言すると**イミュータブル** (変更不可)、`var` で宣言すると**ミュータブル** (変更可能)。
+
+```swift
+let fixedArray = [1, 2, 3]
+fixedArray.append(4)  // エラー! let なので変更できない
+
+var mutableArray = [1, 2, 3]
+mutableArray.append(4)  // OK
+```
