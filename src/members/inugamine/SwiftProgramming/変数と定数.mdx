@@ -1,0 +1,84 @@
+---
+created: 2025-11-12
+tags:
+  - Programming
+aliases:
+  - Programming
+related: "[[Swift]]"
+---
+```dataview
+table dateformat(file.ctime, "yyyy/M/d") as "作成日", tags as "Tags", related as "Related"
+from ""
+where contains(file.name, "Swift")
+sort file.ctime asc
+```
+プログラミングの文脈では、単に「変数」という言葉で定数も含めて指すこともある (主に厳密に言い分ける必要がないとき)。
+
+Swift では下記の[[キーワード]]を使用して定数や変数を作成する:
+- 定数を作成する: `let`
+- 変数を作成する: `var`
+
+
+## 変数 (Variable) - `var`
+
+**何度でも値を変更できる**箱。
+```swift
+var currentLoginAttempt = 0
+currentLoginAttempt = 1  // OK! 変更できる
+currentLoginAttempt = 2  // これもOK
+```
+
+**いつ使う？**
+- 変わる値 (カウンター、スコア、状態など)
+- ループの中で更新する値
+- ユーザー入力で変わる値
+
+
+## 定数 (Constant) - `let`
+
+**一度値を設定したら変更できない**箱。
+```swift
+let maxLoginAttempts = 10
+maxLoginAttempts = 15  // エラー! 変更できない
+```
+
+Swift では、定数の値は**必ずしもコンパイル時に設定されている必要はない**が、正確に**一度だけ**値を設定する必要がある。
+値の指定をたった一度だけ行い、他のあらゆる場所からその定数を利用できる。
+```swift
+// 実行時に値が決まっても OK
+let userInput = readLine()  // ユーザーの入力を受け取る (実行時に決まる)
+
+// ただし、一度決めたら変更不可
+userInput = "別の値"  // エラー!
+```
+
+**いつ使う？**
+- 変わらない値 (設定値、固定の上限など)
+- 一度決めたら変えるべきではない値
+- 「このIDは絶対変えない」のような時
+
+**メリット:**
+- **安全**: 間違って値を変えてしまう心配がない
+- **意図が明確**: 「これは変えないよ」と宣言しているのが分かる
+
+
+## 使い分けの基本ルール
+
+**迷ったら `let` を使う**
+
+理由:
+- 安全性が高い
+- バグが減る
+
+→ 後で変更したいと思ったら `var` に変えればいい。
+
+```swift
+let userName = "Ken"      // 名前は変わらない → let
+var score = 0             // スコアは変わる → var
+let maxScore = 100        // 最大スコアは固定 → let
+```
+
+| キーワード | 種類 | 変更 | 使いどころ |
+|-----------|------|------|-----------|
+| `let` | 定数 | 不可 | 変わらない値、安全に使いたい値 |
+| `var` | 変数 | 可能 | 変わる値、更新が必要な値 |

@@ -1,0 +1,385 @@
+---
+created: 2026-02-01
+tags:
+  - Programming
+aliases:
+  - Programing
+related: "[[Swift]]"
+---
+```dataview
+table dateformat(file.ctime, "yyyy/M/d") as "作成日", tags as "Tags", related as "Related"
+from ""
+where contains(file.name, "Swift")
+sort file.ctime asc
+```
+## 列挙型構文 (Enumeration Syntax)
+
+#### 基本の書き方
+`enum` キーワードで宣言して、中に `case` で選択肢を並べる。
+```swift
+enum CompassPoint {
+    case north
+    case south
+    case east
+    case west
+}
+```
+
+---
+##### 複数ケースを 1 行で書く場合: カンマ区切りで並べてもOK。
+```swift
+enum WeekDay {
+    case monday, tuesday, wednesday, thursday, friday, saturday, sunday
+}
+```
+
+###### 命名規則
+- 型名は **大文字始まり** (`CompassPoint`、`WeekDay`)
+- **単数形** を使う (`WeekDays` ではなく `WeekDay`)
+→ 今回の例では「1つの週」を表す型だから単数、という考え方
+
+---
+##### 変数への代入と型推論
+```swift
+// 宣言時には 型名.ケース名 で指定する
+var directionToHead = CompassPoint.west // ここで型推論が行われる。
+
+// 一度型が決まれば、以降はドット構文だけでOK
+directionToHead = .north
+```
+
+
+
+## switch 文を使った列挙値のパターンマッチング (Matching Enumeration Values with a Switch Statement)
+
+列挙型と `switch` 文を使って、各ケースに対して処理を分岐できる。
+```swift
+enum CompassPoint {
+    case north
+    case south
+    case east
+    case west
+}
+let direction = CompassPoint.south
+
+switch direction {
+    case .north:
+        print("北に向かう")
+    case .south:
+        print("南に向かう")
+    case .east:
+        print("東に向かう")
+    case .west:
+        print("西に向かう")
+}
+// 出力: 南に向かう
+```
+
+---
+##### 網羅性チェック
+Swift の `switch` は**全ケースを網羅しないとコンパイルエラー**になる。
+```swift
+switch direction {
+    case .north:
+        print("北に向かう")
+    case .south:
+        print("南に向かう")
+	// .east と .west がない → コンパイルエラー
+}
+```
+これは列挙型の大きな強みであり、ケースの追加忘れをコンパイラが教えてくれる。
+
+---
+##### default を使う場合
+全ケースを個別に書かなくていい場合は `default` で残りをまとめることができる。
+```swift
+switch direction {
+    case .north:
+        print("北に向かう")
+    case .south:
+        print("南に向かう")
+    default:
+        print("西か東に向かう")
+    // .east と .west を default でまとめた
+}
+```
+ただし、**default を使うと「ケース追加時の網羅性チェック」が効かなくなる**ので、可能なら全ケースを書く方が安全である。
+
+
+
+## 列挙ケースの繰り返し処理
+「この列挙型の全ケースをループで回したい」という場面があるとする。
+```swift
+enum Beverage {
+    case coffee, tea, juice
+}
+// 全部のケースを順番に処理したい
+```
+
+---
+##### CaseIterable プロトコル
+列挙型に `:CaseIterable` を付けると、`allCases` というプロパティが使えるようになる。
+```swift
+enum Beverage :CaseIterable {
+    case coffee, tea, juice
+}
+
+// 全ケースの配列が手に入る
+print(Beverage.allCases)
+// [Beverage.coffee, Beverage.tea, Beverage.juice]
+```
+
+###### 実用例: ケース数を数える
+```swift
+let count = Beverage.allCases.count
+print("\(count)種類の飲み物があります")
+// 3種類の飲み物があります
+```
+
+###### 実用例: 全ケースをループ
+```swift
+for beverage in Beverage.allCases {
+    print(beverage)
+}
+// coffee
+// tea
+// juice
+```
+メニュー表示や、選択肢の一覧を出すときに便利。
+
+
+## 関連値 (Associated Values)
+##### 基本の列挙型の限界
+これまでの列挙型は「どのケースか」しか分からないものだった。
+```swift
+enum Barcode {
+    case upc
+    case qrcode
+}
+var code = Barcode.upc
+// これが UPC なのは分かるが、具体的な番号が分からない。
+```
+「UPC バーコードで、番号が 8-85909-51226-3」のような **追加情報** を持たせたいことがある。
+
+---
+##### 関連値で解決する
+ケースごとに **追加のデータ** を持たせられる。
+```swift
+enum Barcode {
+    case upc(Int, Int, Int, Int) // 4 つの整数を持つ
+    case qrcode(String)          // 文字列を持つ
+}
+```
+
+---
+##### 値の代入
+(実際に変数に値を代入するとき = インスタンス生成時。ここで初めて **具体的な値** が決まる。)
+```swift
+var productBarcode = Barcode.upc(8, 85909, 51226, 3)
+
+// 別の値にも変更できる
+productBarcode = .qrcode("QWFPGJLUY") // ← 上でフル表記しているのでドット構文が可能
+```
+**同じ変数でも、ケースによって持つデータの型が違う (`Int`と`String`)** のがポイント。
+
+---
+##### switch で関連値を取り出す
+```swift
+switch productBarcode {
+    case .upc(let numberSystem, let manufacturer, let product, let check):
+        print("UPC: \(numberSystem), \(manufacturer), \(product), \(check)")
+    case .qrcode(let code):
+        print("QR: \(code)")
+}
+```
+`let` で関連値を定数として取り出して、case の中で使える。
+
+↑↓
+##### 省略記法
+すべて `let` なら、まとめて書ける。
+```swift
+switch productBarcode {
+    case let .upc(numberSystem, manufacturer, product, check):
+        print("UPC: \(numberSystem), \(manufacturer), \(product), \(check)")
+    case let .qrcode(code):
+        print("QR: \(code)")
+}
+```
+`let` の位置がケース名の前に移動している。
+
+---
+##### 単一ケースだけマッチしたいとき (if case)
+全ケースを網羅する必要がない場合は `if case` を使うことができる。
+```swift
+if case .qrcode(let code) = productBarcode {
+    print("QR: \(code)")
+}
+```
+
+---
+
+
+## Raw Value (生の値)
+##### 関連値との違い:
+**関連値**は「インスタンス生成時に決まる、ケースごとに違う値」である。
+**Raw Value** はそれとは逆で、**定義時に決まる、全ケース共通の型の固定値**のこと。
+
+|            | 関連値            | Raw Value       |
+| ---------- | -------------- | --------------- |
+| 値が決まるタイミング | インスタンス生成時      | 定義時             |
+| ケースごとの型    | 違ってても OK       | 全ケース同じ型         |
+| 同じケースの値    | 毎回違っても OK      | 常に同じ            |
+| 用途         | ケースに追加データを持たせる | ケースに固定の識別値を持たせる |
+
+##### 基本の書き方
+列挙型名の後に、型を指定する。
+```swift
+enum ASCIIControlCharacter: Character {
+    case tab = "\t"
+    case lineFeed = "\n"
+    case carriageReturn = "\r"
+}
+```
+各ケースに ` = ` で値を割り当てる。
+
+---
+##### 使える型
+Raw Value に使える型は限られている。
+- `String`
+- `Character`
+- `Int` (整数型)
+- `Double` / `Float` (浮動小数点型)
+
+---
+##### 暗黙的な割り当て (Int の場合)
+`Int` 型だと、値を省略すると自動で連番が振られる。
+```swift
+enum Planet: Int {
+    case mercury =1, venus, earth, mars, jupiter, saturn, uranus, neptune
+}
+// mercury = 1, venus = 2, earth = 3, mars = 4 ...
+```
+最初を `1` にすれば、あとは自動で増えていく。
+最初を `5` にすると、続いて `6`、`7`、`8` と増えていく。
+
+---
+##### 暗黙的な割り当て (String の場合)
+`String` 型だと、ケース名がそのまま値になる。
+```swift
+enum CompassPoint: String {
+    case north, south, east, west
+}
+// north = "north", south = "south" ...
+```
+
+---
+##### Raw Value へのアクセス
+`.rawValue` プロパティで取得できる。
+```swift
+let earthOrder = Planet.earth.rawValue
+print(erathOrder) // 3
+
+let direction = CompassPoint.west.rawValue
+print(direction) // "west"
+```
+
+---
+##### Raw Value からの初期化
+逆に、Raw Value から列挙型を作ることもできる。
+```swift
+let possiblePlanet = Planet(rawValue: 7)
+print(possiblePlanet) // Optional(Planet.uranus)
+// possiblePlanet は Planet? 型 (オプショナル)
+```
+Raw Value から列挙型を作成した場合、**オプショナルを返す**のがポイント。
+実用的な例: ユーザー入力から変換
+```swift
+let userInput = 3
+
+if let planet = Planet(rawValue: userInput) {
+    print("それは \(planet) です") // それは earth です
+} else {
+    print("そのような惑星はありません")
+}
+```
+
+存在しない値を渡されたら `nil` になる。
+```swift
+let noPlanet = Planet(rawValue: 11)
+// nil (11 番目の惑星は上で定義した Planet の一覧に存在しない)
+```
+
+
+## 再帰的列挙型 (Recursive Enumerations)
+**列挙型の関連値に、自分自身の型を持たせたい**時に使う。
+
+---
+例えば「算術式」を考えてみる。
+```
+(5 + 4) * 2
+```
+これを分解すると
+- 整数 `5`
+- 整数 `4`
+- `5 + 4` という加算 (中身は2つの式)
+- 整数 `2`
+- `(5 + 4) * 2` という乗算 (中身は2つの式)
+**式の中に式がネストしている**のが分かる。
+
+---
+##### 普通に書くとエラーになる
+```swift
+enum ArithmeticExpression {
+    case number(Int)
+    case addition(ArithmeticExpression, ArithmeticExpression) // エラー
+}
+```
+「自分自身を関連値に持つ」のは、そのままだとコンパイラが処理できない。
+
+---
+##### indirect で解決
+`indirect` キーワードを付けると、再帰が可能になる。
+```swift
+enum ArithmeticExpression {
+    case number(Int)
+    indirect case addition(ArithmeticExpression, ArithmeticExpression)
+    indirect case multiplication(ArithmeticExpression, ArithmeticExpression)
+}
+```
+または、enum 全体に付けてもよい。
+```swift
+indirect enum ArithmeticExpression {
+    case number(Int)
+    case addition(ArithmeticExpression, ArithmeticExpression)
+    case multiplication(ArithmeticExpression, ArithmeticExpression)
+}
+```
+
+---
+使用例: ( 5 + 4 ) * 2 を表現する
+```swift
+let five = ArithmeticExpression.number(5)
+let four = ArithmeticExpression.number(4)
+let sum = ArithmeticExpression.addition(five, four) // 5 + 4
+let product = ArithmeticExpression.multiplication(sum, .number(2)) //(5+4) * 2
+```
+
+---
+再帰関数で評価する
+```swift
+func evaluate(_ expression: ArithmeticExpression) -> Int {
+    switch expression {
+    case let .number(value):
+        return value
+    case let .addition(left, right):
+        return evaluate(left) + evaluate(right)
+    case let .multiplication(left, right):
+        return evaluate(left) * evaluate(right)
+    }
+}
+
+print(evaluate(product))  // 18
+```
+
+`addition` や `multiplication` の中身も `ArithmeticExpression` なので、
+再帰的に `evaluate` を呼び出して計算している。

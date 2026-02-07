@@ -1,0 +1,549 @@
+---
+created: 2025-12-10
+tags:
+  - Programming
+aliases:
+  - Programming
+related: "[[Swift]]"
+---
+```dataview
+table dateformat(file.ctime, "yyyy/M/d") as "作成日", tags as "Tags", related as "Related"
+from ""
+where contains(file.name, "Swift")
+sort file.ctime asc
+```
+*関数*は、特定のタスクを実行する独立したコードの塊である。何をするものなのかを特定するために名前を与え、必要な時にタスクを実行するために**その関数を「呼び出す」とき**に名前が使われる。
+
+Swift の統一された関数構文は、シンプルな C 言語スタイルのパラメーター名のない関数から、Objective-C スタイルの個々のパラメーターに名前とラベルを付けた関数までを表現できる、十分な柔軟性を持っている。パラメーターには、関数の呼び出しをシンプルにするためにデフォルト値を設定できたり、関数の実行が完了すると渡した[[変数]]を変更する `in-out` パラメーターも渡すことができる。
+
+全ての関数は、パラメーターや戻り値の型で構成された自身の型を持っている。他の Swift の型と同じようにこの型を使用することができる。他の関数のパラメーターに関数を渡したり、関数から関数を戻すことも簡単にできる。
+また、関数の中で関数を作成することで、独自のスコープを作成して機能をカプセル化することもできる。
+
+```swift
+func sayHello() {
+    print("こんにちは！")
+}
+
+sayHello()  // 呼び出し → こんにちは！
+```
+
+
+[[関数]]を定義して呼び出し、[[引数]]にラベルを付け、[[戻り値]]を使用する。
+
+| 用語  | 役割                    |
+| --- | --------------------- |
+| 関数  | 処理のまとまり。名前で呼び出すことができる |
+| 引数  | 関数に渡す入力値              |
+| 戻り値 | 関数から帰ってくる出力値          |
+
+
+
+### 関数の定義と呼び出し (Defining and Calling Functions)
+[[関数]]を定義するとき、必要な場合に名前と型を持つ**パラメーター**([[引数]])と呼ばれる 1 つ以上のインプットを定義することができる。また、関数の完了後に呼び出し元に結果を戻す、*[[戻り値]]* と呼ばれるアウトプットの型も必要な場合に定義できる。
+
+全ての関数は、実行するタスクを説明する*関数名*を持っている。関数を使用するには、その関数をその名前で呼び出し、関数のパラメーターの型に一致する入力値を渡す。
+[[引数]]は、**関数のパラメーターのリストと同じ順序**で与えなければならない。
+
+パラメーターに渡すこの引数には、**引数ラベル**というものを付けて呼び出す。
+Swift の世界では「**これは何のためのものか？**」を明示するルールになっている。
+これにより、関数に引数として何を渡しているのかが一目で分かるようになっている。
+
+パラメーターを入力しない場合は、`()` の中を空にすればよい。
+※引数ラベルがある場合に `()` の中を空にするというわけではない。
+
+
+下記の例の関数は、 `greet(person:)` という関数で、名前が示す通り、人の名前を入力値として受け取り、その人への挨拶を返す。この関数では、`person` という `String` 型のパラメーターと、その人に対する挨拶を含めた `String` 型の戻り値を返す。
+```swift
+//         ↓ 引数ラベル
+func greet(person: String) -> String {
+    let greeting = "こんにちは、" + person + "さん"
+    return greeting
+}
+//    ↓関数名 ↓引数ラベル
+print(greet(person: "Anna"))
+// こんにちは、Annaさん
+
+//    ↓関数名 ↓引数ラベル
+print(greet(person: "Brian"))
+// こんにちは、Brianさん
+```
+この情報は全て、関数の定義にまとめられ、定義の前に `func` キーワードをつける。
+
+関数の[[戻り値]]の型は、戻り矢印 `->` で示し、その後に返す型名が続く。
+**[[戻り値]]がある関数**は `-> 型` を省略できず、**必ずその[[戻り値]]の型を指定しなければならない**。
+また、**型推論にも任せられない**。
+`-> 型` を書かなかった場合、「**この関数は何も返さない**」という意味になってしまう。
+
+`greet(person:)` 関数の本文は、`greeting` と呼ばれる新しい `String` 型の定数を定義し、それにシンプルな挨拶文に設定するところから始まる。
+このメッセージは、`return` キーワードを使用して関数から戻り値を返す。`return greeting` という行で、関数は実行を終了し、`greeting` の現在の値を返す。
+
+ちなみに
+例1: 戻り値あり
+```swift
+func sayHelloWorld() -> String {
+    return "hello, world"
+}
+print(sayHelloWorld())
+```
+例2: 戻り値なし (Void 型)
+```swift
+func sayHelloWorld() {
+    print("hello, world")
+}
+sayHelloWorld()
+```
+これらは画面に表示される結果は同じだが、仕組みと柔軟性が違う。
+**戻り値あり**の場合、返ってきた値は**他の用途にも使える**:
+```swift
+let message = sayHelloWorld()  // 変数に入れる
+let upper = sayHelloWorld().uppercased()  // 加工する
+let repeated = sayHelloWorld() + "!!!"  // 文字列結合
+```
+
+戻り値の型を指定しなければならないように、パラメーター([[引数]])がある場合は**パラメーターにも型の指定が必要**。
+```swift
+// これはダメ ❌
+func greet(name) -> String { // name に型の指定がないのでエラーが発生する
+    return "こんにちは、\(name)さん"
+}
+
+let message = greet(name: "Ken")
+print(message)
+
+
+// 必ず型を書く ✅
+func greet(name: String) -> String { // name に String を指定している
+    return "こんにちは、\(name)さん"
+}
+
+let message = greet(name: "Ken")
+print(message)
+```
+
+**なぜ型推論ができないのか？**
+変数の場合:
+```swift
+let x = 5 // 「5」という具体的な値があるので Int だと分かる
+```
+関数のパラメーターの場合:
+```swift
+func greet(name: ???) -> ??? {
+    return "こんにちは、\(name)さん"
+}
+```
+**定義する時点では、まだ何も渡されていない**。
+空の箱だけがある状態のようなもので、推論する材料がない。
+よって、「この箱には何の型を使わなければならないのか」を明示する必要がある。
+
+
+戻り値は呼び出し元で無視することができる:
+```swift
+func printAndCount(string: String) -> Int {
+    print(string)
+    return string.count
+}
+func printWithoutCounting(string: String) {
+    let _ = printAndCount(string: string) // ここが呼び出し元。_ は「捨てる」という意味
+}
+printAndCount(string: "hello, world")
+// "hello, world" を出力し、 12 の値が返される(画面上に 12 は表示されない)
+printWithoutCounting(string: "hello, world")
+// "hello, world" を出力しますが、値は返されない
+```
+`_`(アンダースコア) は、Swift では **「この値は使わない」** ことをコンパイラに伝えるもの。
+下記のように `let` キーワードを省略することもできる。
+```swift
+_ = printAndCount(string: String)
+```
+これは「戻り値を受け取るが、どこにも保存しない」という意味になる。
+ちなみに「呼び出し元」とは**関数を呼び出している場所**のこと。
+
+| 書き方                               | 意味                  |
+| --------------------------------- | ------------------- |
+| `let result = func()`             | 戻り値を使う              |
+| `let _ = func()` または `_ = func()` | 戻り値を意図的に捨てる         |
+| `func()` だけ                       | 戻り値を無視 (警告が出る可能性あり) |
+#### 戻り値 あり/なし まとめ
+|       | 戻り値あり             | 戻り値なし         |
+| ----- | ----------------- | ------------- |
+| 関数の役割 | 値を作って返す           | 処理を実行するだけ     |
+| 柔軟性   | 高い (変数に入れたり加工できる) | 低い (表示しかできない) |
+| 再利用性  | いろんな場面で使い回すことができる | 決まった処理しかできない  |
+
+#### オプショナルなタプルの戻り値の型
+関数から返されるタプル型が、「値が存在しない」可能性がある場合は、オプショナルのタプル型を使用して、タプル全体が `nil` になる可能性があることを示すことができる。
+その場合は、`(Int, Int)?` や `(String, Int, Bool)?` のようにタプル型の閉じ確固の後ろに疑問符を配置して、オプショナルのタプル型を書く。
+
+`(Int, Int)?` と `(Int?, Int?)` は同じ意味**ではない**ため注意すること。
+- `(Int, Int)?` → タプル自体が「ある or ない」(タプルが返ってくるか、nil が返ってくるか)
+- `(Int?, Int?)` → タプルは必ずあるが、中身が「ある or ない」
+
+オプショナルの型を使用すると、タプル内の個々の値だけでなくタプル全体がオプショナルになる。
+関数を使う際には**オプショナルバインディング**の形で使う。
+```swift
+// ↓定数の前に let をつける。
+  if let bounds = minMax(array: [8, -6, 2, 109, 3, 71]) {
+      print("最小値は \(bounds.min)、最大値は \(bounds.max)")
+  }
+
+// ↓定数の前に let をつける。
+  if let bounds = minMax(array: []) {
+      print("最小値は \(bounds.min)")
+  } else {
+      print("配列が空です")  // こっちが実行される
+  }
+```
+
+
+#### デフォルトパラメータ値 (Default Parameter Values)
+パラメータに**あらかじめ値を設定しておく**ことができる。
+```swift
+func greet(person: String, greeting: String = "Hello") -> String {
+    return "\(greeting), \(person)!"
+}
+```
+`greeting` には `= "Hello"` というデフォルト値が設定されている。
+
+呼び出し方が2通りになる:
+```swift
+// デフォルト値を使う (greeting を省略)
+greet(person: "Anna")
+// "Hello, Anna!"
+
+// 自分で値を指定
+greet(person: "Anna", greeting: "こんにちは")
+// "こんにちは, Anna!"
+```
+省略したら `"Hello"` が使われて、指定したらそちらが優先される。
+
+実用例:
+```swift
+func connect(to server: String, port: Int = 443, useSSL: Bool = true) {
+    // 接続処理
+}
+
+// 全部デフォルトでOKなら
+connect(to: "example.com")
+
+// ポートだけ変えたい
+connect(to: "example.com", port: 8080)
+
+// 全部指定
+connect(to: "example.com", port: 8080, useSSL: false)
+```
+「普通はこの値でいいけど、変えたいときは変えられる」というパターンに便利。
+
+注意点として、**デフォルト値があるパラメータは後ろに置く**のが良い:
+```swift
+// 良い (デフォルトありが後ろ)
+func greet(person: String, greeting: String = "Hello")
+
+// 避けるべき (デフォルトありが前)
+func greet(greeting: String = "Hello", person: String)
+```
+前に置くと、呼び出しが紛らわしくなる。
+
+
+#### 可変長パラメータ (Variadic Parameters)
+**同じ型の値をいくつでも受け取れる**パラメータ。
+`...` (ドット3つ) をつけて宣言する:
+```swift
+func average(_ numbers: Double...) -> Double {
+    var total = 0.0
+    for number in numbers {
+        total += number
+    }
+    return total / Double(numbers.count)
+}
+```
+
+呼び出すときはカンマで区切って**好きな数だけ**渡せる:
+```swift
+average(1.0, 2.0, 3.0)           // 2.0
+average(5.0, 10.0)               // 7.5
+average(1.0, 2.0, 3.0, 4.0, 5.0) // 3.0
+```
+
+関数の中では `numbers` は**配列**として扱われる:
+```swift
+func average(_ numbers: Double...) -> Double {
+    // numbers は [Double] 型として使える
+    print(numbers)       // [1.0, 2.0, 3.0]
+    print(numbers.count) // 3
+    // ...
+}
+```
+
+身近な例として、`print` 関数も可変長パラメータを使っている:
+```swift
+print("Hello")                    // 1つ
+print("Hello", "World")           // 2つ
+print("I", "love", "Swift")       // 3つ → I love Swift
+```
+だから何個でも渡せる。
+
+制限:
+- 1つの関数に可変長パラメータは**複数置ける** (Swift 5.4以降)
+- ただし、可変長の後に続くパラメータには**引数ラベル必須**
+```swift
+func test(_ values: Int..., label: String) {
+    // OK
+}
+test(1, 2, 3, label: "結果")
+```
+
+
+#### In-Out パラメータ (In-Out Parameters)
+通常、関数のパラメータは**定数**なので、中で書き換えることができない:
+```swift
+func double(_ value: Int) {
+    value = value * 2  // エラー! 変更できない
+}
+```
+
+`inout` をつけると、**呼び出し元の変数を直接書き換えられる**:
+```swift
+func double(_ value: inout Int) {
+    value = value * 2  // OK
+}
+```
+
+呼び出すときは `&` をつける:
+```swift
+var number = 5
+double(&number)    // & が必要
+print(number)      // 10 (書き換わっている)
+```
+`&` は「この変数を直接いじっていいぞ」というサイン。
+
+実用例として、2つの値を入れ替える:
+```swift
+func swap(_ a: inout Int, _ b: inout Int) {
+    let temp = a
+    a = b
+    b = temp
+}
+
+var x = 10
+var y = 20
+swap(&x, &y)
+print(x)  // 20
+print(y)  // 10
+```
+
+注意点:
+```swift
+// 定数には使えない
+let number = 5
+double(&number)  // エラー! let は変更不可
+
+// 変数じゃないとダメ
+var number = 5
+double(&number)  // OK
+```
+
+普通の戻り値との違い:
+```swift
+// 戻り値で返すパターン
+func doubled(_ value: Int) -> Int {
+    return value * 2
+}
+var a = 5
+a = doubled(a)  // 新しい値を受け取って代入
+
+// inout パターン
+func double(_ value: inout Int) {
+    value = value * 2
+}
+var b = 5
+double(&b)  // 直接書き換え
+```
+どちらでも同じ結果になるが、inout は**複数の値を同時に変更したい**ときに便利。
+
+
+#### 関数型 (Function Types)
+Swift では、**関数にも型がある**。
+```swift
+func add(_ a: Int, _ b: Int) -> Int {
+    return a + b
+}
+```
+
+関数を変数に入れることもできる。
+```swift
+var mathFunction(Int, Int) -> Int
+
+mathFunction = add
+print(mathFunction(2, 3)) // 5
+```
+ここでは変数 `mathFunction` に関数を代入して、後から呼び出すことができる。
+(**関数も値として扱える**ということ)
+
+型推論も効く
+```swift
+let anotherMathFunction = add // (Int, Int) -> Int と推論される
+```
+
+「どの処理を実行するか」を **実行時に切り替えられる**:
+```swift
+func calculate(_ a: Int, _ b: Int, using operation: (Int, Int) -> Int) -> Int {
+    operation(a, b)
+}
+
+calculate(10, 5, using: add) // 15
+calculate(10, 5, using: multiply) // 50
+```
+何が起こっているのかというと↓
+```swift
+func calculate(_ a: Int, _ b: Int, using operation: (Int, Int) -> Int) -> Int {
+    operation(a, b)  // ← ここで初めて実行される
+}
+
+calculate(10, 5, using: add)
+```
+1. `add` という **関数そのもの** が `operation` に渡される
+2. `calculate` の中で `operation(a, b)` → つまり `add(10, 5)` が実行される
+3. 結果の `15` が返る
+---
+流れを図にすると↓
+```swift
+calculate(10, 5, using: add)
+         │   │         │
+         ▼   ▼         ▼
+func calculate(_ a: Int, _ b: Int, using operation: (Int, Int) -> Int)
+              a = 10    b = 5           operation = add
+                                                    │
+         ┌──────────────────────────────────────────┘
+         ▼
+    operation(a, b)  →  add(10, 5)  →  15
+```
+
+
+
+#### 戻り値の型としての関数型 (Function Types as Return Types)
+上記の例は「関数を引数として渡す」だった。今度は逆で、**関数を返す関数**を示す。
+```swift
+func stepForward(_ input: Int) -> Int {
+    return input + 1
+}
+
+func stepBackward(_ input: Int) -> Int {
+    return input - 1
+}
+
+func chooseStepFunction(backward: Bool) -> (Int) -> Int {
+    backward ? stepBackward : stepForward
+}
+```
+
+分解してみる:
+```swift
+func chooseStepFunction(backward: Bool) -> (Int) -> Int
+//                                         ^^^^^^^^^^^^
+//                                         戻り値の型 = 関数
+```
+
+使う例:
+```swift
+var currentValue = 3
+
+// backward: true なので stepBackward が返ってくる
+let moveNearerToZero = chooseStepFunction(backward: currentValue > 0)
+
+// moveNearerToZero は stepBackward と同じ
+print(moveNearerToZero(currentValue))  // 2
+
+// ループで使う例
+var value = 5
+
+let step = chooseStepFunction(backward: value > 0)
+
+while value != 0 {
+    print(value)
+    value = step(value)
+}
+// 5, 4, 3, 2, 1 と表示されて 0 で終わる
+```
+ 
+
+
+#### ネスト関数 (Nested Functions)
+**関数の中に、さらに関数を定義する**ことができ、これを**ネスト関数**と呼ぶ。
+```swift
+func chooseStepFunction(backward: Bool) -> (Int) -> Int {
+    // ↓ この中で関数を定義
+    func stepForward(_ input: Int) -> Int {
+        return input + 1
+    }
+    
+    func stepBackward(_ input: Int) -> Int {
+        return -1
+    }
+    // ↑ ここまでネスト関数
+    
+    return backward ? stepBackward : stepForward
+}
+```
+
+ネスト関数の利点:
+1. スコープが限定される
+   ```swift
+   chooseStepFunction(backward: true) // 呼べる
+
+   stepForward(5)  // ← エラー (外からは見えない)
+   stepBaskward(5) // ← エラー (外からは見えない) 
+   ```
+   `stepForward` と `stepBackward` は `chooseStepFunction` の**中でしか使わない**ので、外に見せる必要がない。余計なものを隠して**意図しないアクセスを防ぐ**ことができる。
+   
+2. 関連する処理をまとめられる
+   「この関数はあの関数の中でしか使われない」という関係が明確になる。
+   　それにより、コードが整理される。
+
+
+
+#### return キーワード
+`return` は **「この関数を今すぐ終われ！」** という命令。
+
+2つの役割がある:
+1. **値を返す**: 戻り値がある関数で結果を呼び出し元に渡す
+2. **関数を終了する**: その場で関数の実行を止める
+
+シンプルな例:
+```swift
+func sayHello() {
+    print("1番目")
+    return           // ← ここで終了!
+    print("2番目")   // ← 実行されない (到達不能コード)
+}
+
+sayHello()
+// 出力: 1番目
+```
+
+`guard` 文と一緒に使う例:
+```swift
+func greet(person: [String: String]) {
+    guard let name = person["name"] else {
+        return  // ← name がなければここで関数終了
+    }
+    
+    print("こんにちは、\(name)さん。")
+}
+```
+
+`return` の後のコードは実行されないので、**早期リターン** (条件を満たさない場合にさっさと抜ける) のパターンでよく使われる。
+
+
+
+## 関数のまとめ
+| トピック      | ポイント                      |
+| --------- | ------------------------- |
+| 定義と呼び出し   | `func 名前(パラメーター) -> 戻り値型` |
+| 引数ラベル     | 呼び出し用と内部用で名前を分けられる        |
+| `_`       | 引数ラベルを省略                  |
+| デフォルト値    | ` = 値 ` で省略可能に            |
+| 可変長パラメーター | `型...` で複数受け取ることができる      |
+| in-out    | `inout` と `&` で外の変数を書き換え  |
+| 関数型       | 関数も値として扱える `(型) -> 型`    |
+| ネスト関数     | 関数の中に関数を定義                |
+| return    | 値を返す / 関数を終了する           |
